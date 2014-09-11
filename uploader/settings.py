@@ -1,5 +1,9 @@
 # Django settings for uploader project.
 
+import os
+PROJECT_PATH = os.path.realpath(os.path.dirname(__file__))
+print 'PROJECT_PATH = %s'%PROJECT_PATH 
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -113,7 +117,8 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/Users/adibaron/Dropbox/uploader/www/templates',
+    #'/Users/adibaron/Dropbox/uploader/www/templates',
+    PROJECT_PATH + '/../www/templates/'
 )
 
 INSTALLED_APPS = (

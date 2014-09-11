@@ -21,8 +21,9 @@ urlpatterns = patterns('',
 
 
 urlpatterns += patterns('',
-	url('^upload/$', ResumableUploadView.as_view(),
-    	name='upload'),
+    url(r'^$', views.index, name='home'),
+	
+    url('^upload/$', ResumableUploadView.as_view(), name='upload'),
 
-	url('^index.html/$', views.index, name='index'),
+    url('^index.html/$', views.index, name='index'),
 )
