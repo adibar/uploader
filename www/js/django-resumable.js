@@ -119,6 +119,7 @@ DjangoResumable.prototype.initResumable = function (el, progress, filePath, file
     opts = this.extend(this.options.resumableOptions, opts);
     var r = new Resumable(opts);
     r.assignBrowse(el);
+    r.assignDrop($('#filedrag'));
     this.each(['fileAdded', 'progress', 'fileSuccess', 'fileError'], function (eventType) {
         var callback = this.options['on' + eventType.substring(0, 1).toUpperCase() + eventType.substring(1)];
         r.on(eventType, function () {
