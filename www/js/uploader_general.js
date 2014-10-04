@@ -54,8 +54,8 @@ function Output(msg) {
 }            
 
 function PreventFileRender(e) { 
-        e.stopPropagation();
-        e.preventDefault();
+    e.stopPropagation();
+    e.preventDefault();
 }
 
 // file selection
@@ -64,47 +64,48 @@ function FileSelectHandler(e) {
     // cancel event and hover styling
     FileDragHover(e);
 
+    
+    /*
     // fetch FileList object
     var files = e.target.files || e.dataTransfer.files;
 
     // process all File objects
     for (var i = 0, f; f = files[i]; i++) {
         ParseFile(f);
+        dj.addFile(f);
     }
+    */
 
+}
+
+function VFileName(fname) {
+    //return fname.replace(" ", "").split(".").join("\\.");
+    return fname.replace(" ", "").replace(".", "");
 }
 
 function ParseFile(file) {
 	Output(
 		"<li> " +
 			"<div style='height:20px; padding-top:10px;'>" +
-				"<div style='width:65%; height:20px; float:left; overflow: hidden; text-overflow:ellipsis;'>" + file.name 	+ "</div>" + 
+				"<div style='width:65%; height:20px; float:left; overflow: hidden; text-overflow:ellipsis;'>" + file.file.name 	+ "</div>" + 
 				"<div style='width:5%; height:20px; float:right;'>" 		 								  + 'X' 		+ "</div>" + 
-				"<div style='width:12%; height:20px; float:right;'>"  		 				  				  + "100%" 		+ "</div>" + 
-				"<div style='width:18%; height:20px; float:right;'>"   		 				  				  + Number(file.size/1000/1000).toFixed(2) + "MB </div>" + 
+				//"<div id='p" + VFileName(file.name) + "' style='width:12%; height:20px; float:right;'>"  + "0%" + "</div>" + 
+                "<div id='p" + file.uniqueIdentifier + "' style='width:12%; height:20px; float:right;'>"  + "0%" + "</div>" + 
+				"<div style='width:18%; height:20px; float:right;'>"   		 				  				  + Number(file.file.size/1000/1000).toFixed(2) + "MB </div>" + 
 				
 			"</div>" +
 		"</li>" 
-
-		/*
-		"<div id='progress_bar' class='ui-progress-bar ui-container' style='width:50%; display:inline-block; '>" +
-         	 "<div class='ui-progress' style='width: 0%;'>" +
-            	"<span class='ui-label' style='xxxdisplay:none;'>" +
-                	"<b> 0% </b>" +
-                "</span>" +
-             "</div>" +
-        "</div>"
-        */
 	);
-	/*
-    Output(
-        "<p>File information: <strong>" + file.name +
-        "</strong> type: <strong>" + file.type +
-        "</strong> size: <strong>" + file.size +
-        "</strong> bytes</p>"
-    );
-	*/
-    
+}
+
+function updateProgress(file) {
+    //var sel = ("#p" + file.file.name).split('.').join('\\.');
+    //var sel = "#p" + VFileName(file.file.name);
+    var sel = "#p" + file.uniqueIdentifier;
+    var el  = $( sel );
+    var txt = Math.floor( file.progress()*100) + '%' 
+    el.text( txt );
+
 }
 
 // file drag hover

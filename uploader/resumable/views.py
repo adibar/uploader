@@ -23,13 +23,14 @@ class ResumableUploadView(View):
         """Saves chunks then checks if the file is complete.
         """
         chunk = self.request.FILES.get('file')
-        r = ResumableFile(self.storage, self.request.POST)
-        if r.chunk_exists:
+        rf = ResumableFile(self.storage, self.request.POST)
+        if rf.chunk_exists:
             return HttpResponse('post chunk already exists')
-        r.process_chunk(chunk)
-        if r.is_complete:
-            self.process_file(r.filename, r.file)
-            r.delete_chunks()
+        rf.process_chunk(chunk)
+        if rf.is_complete:
+            self.process_file(rf.filename, rf.file)
+            rf.delete_chunks()
+        #import pdb; pdb.set_trace()
         return HttpResponse()
 
     def process_file(self, filename, file):

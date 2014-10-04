@@ -1,7 +1,7 @@
 var DjangoResumable = function (options) {
     "use strict";
     var defaults, els;
-    options = options || { chunkSize : 20*1024*1024 } ;
+    options = options || { chunkSize : 2*1024*1024 } ;
     defaults = {
         csrfInputName: 'csrfmiddlewaretoken',
         urlAttribute: 'data-upload-url',
@@ -11,7 +11,7 @@ var DjangoResumable = function (options) {
         onFileAdded: this.onFileAdded,
         onFileSuccess: this.onFileSuccess,
         onProgress: this.onProgress,
-        resumableOptions: { chunkSize:20*1024*1024, }
+        resumableOptions: { chunkSize:2*1024*1024, }
     };
     this.options = this.extend(defaults, options);
     this.csrfToken = document.querySelector('input[name=' + this.options.csrfInputName + ']').value;
@@ -19,7 +19,27 @@ var DjangoResumable = function (options) {
     this.each(els, function (el) {
         this.initField(el);
     });
+
+    //var elements = Array.prototype.slice.call(arguments),
+    //self = this,
+    var el = document.querySelectorAll('input[' + this.options.urlAttribute + ']');
+    var tr = el[0].getAttribute(this.options.urlAttribute);
+    var opts = {
+            
+        target: tr,
+        query: {
+            'csrfmiddlewaretoken': this.csrfToken
+        }
+    };
+
+    opts = this.extend(this.options.resumableOptions, opts);
+    //this.r = new Resumable(opts);
+    //r.assignBrowse(el);
+    //this.r.assignDrop($('#filedrag'));
+
+
 };
+
 
 
 DjangoResumable.prototype.each = function (elements, fn) {
@@ -41,7 +61,6 @@ DjangoResumable.prototype.extend = function (target, source) {
     }
     return target;
 };
-
 
 DjangoResumable.prototype.getErrorList = function (el, create) {
     "use strict";
@@ -79,8 +98,8 @@ DjangoResumable.prototype.initField = function (el) {
     "use strict";
     var progress, fileName, filePath, filePathName;
 
-    progress = this.initProgressBar();
-    el.parentNode.insertBefore(progress, el.nextSibling);
+    //progress = this.initProgressBar();
+    //el.parentNode.insertBefore(progress, el.nextSibling);
 
     filePathName = el.getAttribute('name') + '-path';
     filePath = el.parentNode.querySelector('[name=' + filePathName + ']');
@@ -103,6 +122,9 @@ DjangoResumable.prototype.initProgressBar = function () {
     return progress;
 };
 
+DjangoResumable.prototype.addFile = function(file) {
+    this.r.addFile(file)    
+}
 
 DjangoResumable.prototype.initResumable = function (el, progress, filePath, fileName) {
     "use strict";
@@ -117,19 +139,43 @@ DjangoResumable.prototype.initResumable = function (el, progress, filePath, file
         };
 
     opts = this.extend(this.options.resumableOptions, opts);
-    var r = new Resumable(opts);
-    r.assignBrowse(el);
-    r.assignDrop($('#filedrag'));
+    this.r = new Resumable(opts);
+    this.r.assignDrop($('#filedrag'));
+    //r.assignBrowse(el);
+    //r.assignDrop($('#filedrag'));
+    /*
     this.each(['fileAdded', 'progress', 'fileSuccess', 'fileError'], function (eventType) {
         var callback = this.options['on' + eventType.substring(0, 1).toUpperCase() + eventType.substring(1)];
-        r.on(eventType, function () {
+        this.r.on(eventType, function () {
             var args = arguments.length > 0 ? Array.prototype.slice.call(arguments) : [];
-            callback.apply(self, [r].concat(args).concat(elements));
+            callback.apply(self, [this.r].concat(args).concat(elements));
         });
     });
-    return r;
+    */
+
+    this.r.on('fileAdded', function(file, event){
+        ParseFile(file);
+        //this.upload();
+    });
+    this.r.on('fileProgress', function(file){
+        console.log('fileProgress')
+        var uploaded = file.progress();
+        console.log('fileProgress %d% of %d', uploaded*100, file.size);
+        updateProgress(file);
+    });
+    this.r.on('fileSuccess', function(file, message){
+        console.log('fileSuccess')
+    });
+    this.r.on('fileError', function(file, message){
+        console.log('fileError')
+    });
+
+    return this.r;
 };
 
+DjangoResumable.prototype.start_upload = function() {
+    this.r.upload();
+}
 
 DjangoResumable.prototype.onFileError = function (r, file, message, el) {
     "use strict";
@@ -144,11 +190,11 @@ DjangoResumable.prototype.onFileError = function (r, file, message, el) {
 DjangoResumable.prototype.onFileAdded = function (r, file, el, progress, filePath, fileName) {
     "use strict";
     var errorList = this.getErrorList(el);
-    if (errorList) {
-        errorList.parentNode.removeChild(errorList);
-    }
-    r.upload();
-    progress.style.display = this.options.progressDisplay;
+    //if (errorList) {
+    //    errorList.parentNode.removeChild(errorList);
+    //}
+    this.r.upload();
+    //progress.style.display = this.options.progressDisplay;
 };
 
 

@@ -57,10 +57,11 @@ class ResumableFile(object):
         filename = self.kwargs.get('resumableFilename')
         if '/' in filename:
             raise Exception('Invalid filename')
-        return "%s_%s" % (
-            self.kwargs.get('resumableTotalSize'),
-            filename
-        )
+        # return "%s_%s" % (
+        #     self.kwargs.get('resumableTotalSize'),
+        #     filename
+        # )
+        return "%s"%filename
 
     @property
     def is_complete(self):
